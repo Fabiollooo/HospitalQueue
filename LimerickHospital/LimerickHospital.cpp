@@ -9,9 +9,10 @@
 
 using namespace std;
 
+//Notes: "pq." is the call for functions
+//Add so that you cannot have a condition higher than 5.
 
-
-void AddPatient(PQType<Patient>& pq, int timestamp)
+void AddPatient(PQType<Patient>& pq, int timestamp) //#1
 {
     string name;
     int priority;
@@ -27,18 +28,45 @@ void AddPatient(PQType<Patient>& pq, int timestamp)
     timestamp++;
 }
 
-void CallNextPatient(PQType<Patient>& pq)
+
+
+void CallNextPatient(PQType<Patient>& pq)//#2
 {
-    if (pq.IsEmpty()) cout << "No patients.\n";
-    else {
+    if (pq.IsEmpty())
+    {
+        cout << "No patients.\n";
+    }
+    else 
+    {
         Patient p("", 0, 0);
         pq.Dequeue(p);
         cout << "Next: " << p.GetName() << endl;
     }
 }
 
+void DisplayCurrentQueue(PQType<Patient>& pq)//#3
+{
+    if (pq.IsEmpty())
+    {
+        cout << "No patients. \n";
+    }
+    
+    cout << "Current Queue of Patients :\n";
 
-void DisplayPatients(PQType<Patient>& pq)
+    PQType<Patient> tempQueue = pq; //Example of a shadow copy
+
+    while (!tempQueue.IsEmpty())
+    {
+        Patient currentPatient("", 0, 0);
+        pq.Dequeue(currentPatient);
+        cout << "Name: " << currentPatient.GetName() << " Priority: " << currentPatient.GetPriority() << endl;
+    }
+}
+
+
+
+
+void DisplayPatients(PQType<Patient>& pq)//#5
 {
     if (pq.IsEmpty())
     {
@@ -67,7 +95,7 @@ int main()
 {
     
     int timestamp = 0;
-    PQType<Patient> patientQueue(100);
+    PQType<Patient> patientQueue(100); //max no of patients = 100
     int choice;
     
     while (true)
@@ -97,6 +125,7 @@ int main()
 
             case 3: 
                 //Print current queue
+                DisplayCurrentQueue(patientQueue);
                 break; 
 
             case 4:
