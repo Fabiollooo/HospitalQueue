@@ -6,11 +6,15 @@
 #include "Patient.h"
 
 
+//Colours
+//#include <windows.h> 
+
 
 using namespace std;
 
-//Notes: "pq." is the call for functions
+
 //Add so that you cannot have a condition higher than 5.
+
 
 void AddPatient(PQType<Patient>& pq, int timestamp) //#1
 {
@@ -22,6 +26,11 @@ void AddPatient(PQType<Patient>& pq, int timestamp) //#1
 
     cout << "Enter the Patient's Condition (1-5): ";
     cin >> priority;
+
+    if (priority > 5 || priority < 1)
+    {
+        cout << "Please enter a valid Patient Condition: \n";
+    }
 
     Patient newPatient(name, priority, timestamp);
     pq.Enqueue(newPatient);
@@ -40,12 +49,15 @@ void CallNextPatient(PQType<Patient>& pq)//#2
     {
         Patient p("", 0, 0);
         pq.Dequeue(p);
-        cout << "Next: " << p.GetName() << endl;
+        cout << "Next Patient: " << p.GetName() << endl;
     }
 }
 
+
 void DisplayCurrentQueue(PQType<Patient>& pq)//#3
 {
+    Patient currentPatient;
+
     if (pq.IsEmpty())
     {
         cout << "No patients. \n";
@@ -53,14 +65,18 @@ void DisplayCurrentQueue(PQType<Patient>& pq)//#3
     
     cout << "Current Queue of Patients :\n";
 
-    PQType<Patient> tempQueue = pq; //Example of a shadow copy
+    
+        PQType<Patient> tempQueue = pq; 
 
-    while (!tempQueue.IsEmpty())
-    {
-        Patient currentPatient("", 0, 0);
-        pq.Dequeue(currentPatient);
-        cout << "Name: " << currentPatient.GetName() << " Priority: " << currentPatient.GetPriority() << endl;
-    }
+        while (!pq.IsEmpty())
+        {
+            //Patient currentPatient("", 0, 0);
+            pq.Dequeue(currentPatient);
+            tempQueue.Enqueue(currentPatient);
+            cout << "Name: " << currentPatient.GetName() << " Priority: " << currentPatient.GetPriority() << endl;
+        }
+    
+
 }
 
 
@@ -81,6 +97,8 @@ void DisplayPatients(PQType<Patient>& pq)//#5
         Patient currentPatient = pq.items.elements[i];
         cout << "Name: " << currentPatient.GetName() << ", Condition: " << currentPatient.GetPriority() << endl;
     }
+
+
 }
 
 
@@ -95,16 +113,19 @@ int main()
 {
     
     int timestamp = 0;
-    PQType<Patient> patientQueue(100); //max no of patients = 100
+    PQType<Patient> patientQueue(10); //max no of patients = 100
+    //PQType<Patient> tempQueue(10);
     int choice;
-    
+
+    //Patient currentPatient;
+        
     while (true)
     {
         cout << "\n--Menu--" << endl;
         cout << "1. Add a new patient" << endl;
         cout << "2. Call the next patient (Delete)" << endl;
         cout << "3. Print the current Queue of Patients" << endl;
-        cout << "4. Search for a patient" << endl;
+        //cout << "4. Search for a patient" << endl;
         cout << "5. Display Patients" << endl;
         cout << "6. Exit" << endl;
 
@@ -126,11 +147,12 @@ int main()
             case 3: 
                 //Print current queue
                 DisplayCurrentQueue(patientQueue);
+                
                 break; 
 
-            case 4:
-                //Search Patient
-                break;
+            //case 4:
+            //    //Search Patient
+            //    break;
 
             case 5: 
                 //Display Patients
