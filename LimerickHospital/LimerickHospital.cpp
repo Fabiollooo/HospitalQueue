@@ -16,7 +16,7 @@ using namespace std;
 //Add so that you cannot have a condition higher than 5.
 
 
-void AddPatient(PQType<Patient>& pq, int timestamp) //#1
+void AddPatient(PQType<Patient>& pq, int& timestamp) //#1
 {
     string name;
     int priority;
@@ -24,18 +24,16 @@ void AddPatient(PQType<Patient>& pq, int timestamp) //#1
     cout << "Enter Patient's Name: ";
     cin >> name;
 
-    cout << "Enter the Patient's Condition (1-5): ";
-    cin >> priority;
-
-    if (priority > 5 || priority < 1)
-    {
-        cout << "Please enter a valid Patient Condition: \n";
-    }
+    do {
+        cout << "Enter the Patient's Condition (1-5): ";
+        cin >> priority;
+    } while (priority < 1 || priority > 5);
 
     Patient newPatient(name, priority, timestamp);
     pq.Enqueue(newPatient);
-    timestamp++;
+    timestamp++; 
 }
+
 
 
 
@@ -54,30 +52,58 @@ void CallNextPatient(PQType<Patient>& pq)//#2
 }
 
 
-void DisplayCurrentQueue(PQType<Patient>& pq)//#3
+void DisplayCurrentQueue(PQType<Patient>& pq) // #3
 {
-    Patient currentPatient;
-
     if (pq.IsEmpty())
     {
-        cout << "No patients. \n";
+        cout << "No patients.\n";
+        return;
     }
-    
-    cout << "Current Queue of Patients :\n";
 
-    
-        PQType<Patient> tempQueue = pq; 
+    cout << "Current Queue of Patients:\n";
 
-        while (!pq.IsEmpty())
-        {
-            //Patient currentPatient("", 0, 0);
-            pq.Dequeue(currentPatient);
-            tempQueue.Enqueue(currentPatient);
-            cout << "Name: " << currentPatient.GetName() << " Priority: " << currentPatient.GetPriority() << endl;
-        }
-    
+    PQType<Patient> tempQueue = pq;
+    Patient currentPatient;
 
+    while (!tempQueue.IsEmpty())
+    {
+        tempQueue.Dequeue(currentPatient);
+        cout << "Name: " << currentPatient.GetName()
+            << " Priority: " << currentPatient.GetPriority() << endl;
+    }
 }
+
+void SearchPatient(PQType<Patient>& pq) // #4
+{
+    if (pq.IsEmpty())
+    {
+        cout << "No patients.\n";
+        return;
+    }
+
+    string searchName;
+    cout << "Enter Patient's Name to search: ";
+    cin >> searchName;
+
+    bool found = false;
+    for (int i = 0; i < pq.numItems; i++)
+    {
+        Patient currentPatient = pq.items.elements[i];
+        if (currentPatient.GetName() == searchName)
+        {
+            cout << "Patient Found -> Name: " << currentPatient.GetName()
+                << ", Condition: " << currentPatient.GetPriority() << endl;
+            found = true;
+            break;
+        }
+    }
+
+    if (!found)
+    {
+        cout << "Patient not found.\n";
+    }
+}
+
 
 
 
@@ -125,7 +151,7 @@ int main()
         cout << "1. Add a new patient" << endl;
         cout << "2. Call the next patient (Delete)" << endl;
         cout << "3. Print the current Queue of Patients" << endl;
-        //cout << "4. Search for a patient" << endl;
+        cout << "4. Search for a patient" << endl;
         cout << "5. Display Patients" << endl;
         cout << "6. Exit" << endl;
 
@@ -150,9 +176,10 @@ int main()
                 
                 break; 
 
-            //case 4:
-            //    //Search Patient
-            //    break;
+            case 4:
+                //Search Patient
+                SearchPatient(patientQueue);
+                break;
 
             case 5: 
                 //Display Patients
